@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz de Sistemas Computacionais</title>
+    <style>
+      :root {
+        --primary: #7c3aed;
+        --primary-light: #8b5cf6;
+        --primary-dark: #5b21b6;
+        --gray-light: #f3f4f6;
+        --gray: #e5e7eb;
+        --text: #1f2937;
+        --text-light: #6b7280;
+        --success: #10b981;
+        --error: #ef4444;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+          sans-serif;
+      }
+
+      body {
+        color: var(--text);
+        background-color: var(--gray-light);
+        line-height: 1.5;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        width: 100%;
+      }
+
+      header {
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 1rem 0;
+      }
+
+      header .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
+
+      .logo {
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .logo svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      main {
+        flex-grow: 1;
+        padding: 2rem 0;
+      }
+
+      .card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--primary);
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        margin-bottom: 1rem;
+      }
+
+      .welcome-screen {
+        text-align: center;
+      }
+
+      .question-screen,
+      .results-screen {
+        display: none;
+      }
+
+      .question-number {
+        display: inline-block;
+        background-color: var(--primary);
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 32px;
+        margin-right: 0.5rem;
+      }
+
+      .options {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .option {
+        padding: 1rem;
+        border: 2px solid var(--gray);
+        border-radius: 0.5rem;
+        margin-bottom: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: flex-start;
+      }
+
+      .option:hover {
+        border-color: var(--primary-light);
+        background-color: var(--gray-light);
+      }
+
+      .option.selected {
+        border-color: var(--primary);
+        background-color: var(--gray-light);
+      }
+
+      .option.correct {
+        border-color: var(--success);
+        background-color: rgba(16, 185, 129, 0.1);
+      }
+
+      .option.incorrect {
+        border-color: var(--error);
+        background-color: rgba(239, 68, 68, 0.1);
+      }
+
+      .option-letter {
+        display: inline-block;
+        background-color: var(--gray);
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        margin-right: 0.75rem;
+        font-weight: 600;
+        flex-shrink: 0;
+      }
+
+      .option.selected .option-letter,
+      .option:hover .option-letter {
+        background-color: var(--primary-light);
+        color: white;
+      }
+
+      .option.correct .option-letter {
+        background-color: var(--success);
+        color: white;
+      }
+
+      .option.incorrect .option-letter {
+        background-color: var(--error);
+        color: white;
+      }
+
+      .feedback {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        display: none;
+      }
+
+      .feedback.correct {
+        background-color: rgba(16, 185, 129, 0.1);
+        border: 1px solid var(--success);
+        color: var(--success);
+      }
+
+      .feedback.incorrect {
+        background-color: rgba(239, 68, 68, 0.1);
+        border: 1px solid var(--error);
+        color: var(--error);
+      }
+
+      .explanation {
+        background-color: var(--gray-light);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-top: 1rem;
+        display: none;
+        border-left: 4px solid var(--primary);
+      }
+
+      .progress-bar {
+        height: 8px;
+        background-color: var(--gray);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        background-color: var(--primary);
+        transition: width 0.3s;
+      }
+
+      .navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+      }
+
+      button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-dark);
+      }
+
+      .btn-secondary {
+        background-color: var(--gray);
+        color: var(--text);
+      }
+
+      .btn-secondary:hover {
+        background-color: var(--gray-light);
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+      }
+
+      .btn-outline:hover {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-next {
+        display: none;
+      }
+
+      .results-summary {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .score {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 1rem 0;
+      }
+
+      .result-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      footer {
+        background-color: white;
+        text-align: center;
+        padding: 1.5rem 0;
+        margin-top: auto;
+        color: var(--text-light);
+        font-size: 0.875rem;
+      }
+
+      @media (max-width: 640px) {
+        .navigation {
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .navigation button {
+          width: 100%;
+        }
+
+        .result-actions {
+          flex-direction: column;
+        }
+
+        .result-actions button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="logo">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          Quiz de Sistemas Computacionais
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <div class="welcome-screen card">
+          <h1>Quiz de Sistemas Computacionais</h1>
+          <p>
+            Teste seus conhecimentos sobre os fundamentos da sistemas
+            computacionais.
+          </p>
+          <p>
+            Este quiz contém 50 questões de múltipla escolha. Você verá uma
+            questão por vez e receberá feedback imediato após responder.
+          </p>
+          <button id="start-btn" class="btn-primary">Iniciar Quiz</button>
+        </div>
+
+        <div class="question-screen">
+          <div class="progress-bar">
+            <div class="progress-bar-fill" style="width: 0%"></div>
+          </div>
+          <div class="card">
+            <div id="question-container">
+              <h2>
+                <span class="question-number">1</span>
+                <span id="question-text">Texto da questão vai aqui</span>
+              </h2>
+              <ul class="options" id="options-list">
+              </ul>
+              <div class="feedback correct" id="feedback-correct">
+                <strong>Correto!</strong> Você acertou a resposta.
+              </div>
+              <div class="feedback incorrect" id="feedback-incorrect">
+                <strong>Incorreto.</strong> A resposta correta é:
+                <span id="correct-answer"></span>
+              </div>
+              <div class="explanation" id="explanation">
+              </div>
+            </div>
+            <div class="navigation">
+              <button id="btn-previous" class="btn-secondary">Voltar</button>
+              <button id="btn-check" class="btn-primary">Verificar</button>
+              <button id="btn-next" class="btn-primary btn-next">
+                Próxima
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="results-screen card">
+          <div class="results-summary">
+            <h1>Resultado do Quiz</h1>
+            <p>Você completou o quiz de Sistemas Computacionais!</p>
+            <div class="score">
+              <span id="correct-count">0</span>/<span id="total-questions"
+                >50</span
+              >
+            </div>
+            <p id="score-message">Mensagem baseada na pontuação</p>
+          </div>
+          <div class="result-actions">
+            <button id="restart-btn" class="btn-primary">
+              Tentar Novamente
+            </button>
+            <button id="download-btn" class="btn-outline">
+              Baixar Gabarito (PDF)
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>Desenvolvido por Ariel Spencer &copy; 2025</p>
+      </div>
+    </footer>
+
+    <script>
+      const questions = [
+        {
+          text: "A arquitetura de Von Neumann é caracterizada por:",
+          options: [
+            "Instruções e dados armazenados em memórias separadas",
+            "Processamento paralelo de dados",
+            "Um barramento único para transmissão de dados e instruções",
+            "Programa e dados armazenados na mesma memória",
+          ],
+          correctAnswer: 3,
+          explanation: {
+            correct:
+              "Programa e dados armazenados na mesma memória é uma das principais características da arquitetura de Von Neumann, o que facilita o acesso e possibilita a modificação de instruções.",
+            options: [
+              "FALSA - Na arquitetura de Von Neumann, instruções e dados são armazenados na mesma memória, não em memórias separadas (o que caracterizaria a arquitetura Harvard).",
+              "FALSA - A arquitetura de Von Neumann é originalmente sequencial, não paralela. O processamento paralelo é uma característica de arquiteturas mais modernas ou modificadas.",
+              "FALSA - Na arquitetura de Von Neumann existem vários barramentos (dados, endereços e controle), não apenas um único.",
+              "VERDADEIRA - Uma das principais características da arquitetura de Von Neumann é que o programa e os dados ficam armazenados na mesma memória, o que facilita o acesso e possibilita a modificação de instruções.",
+            ],
+          },
+        },
+        {
+          text: "No contexto da arquitetura de computadores, uma CPU possui registradores específicos. O registrador que armazena a última instrução lida é chamado de:",
+          options: [
+            "MBR - Memory Buffer Register",
+            "MAR - Memory Address Register",
+            "PC - Program Counter",
+            "IR - Instruction Register",
+          ],
+          correctAnswer: 3,
+          explanation: {
+            correct:
+              "O IR (Instruction Register) ou Registrador de Instrução armazena a última instrução lida da memória para ser decodificada pela unidade de controle.",
+            options: [
+              "FALSA - O MBR (Memory Buffer Register) contém um valor para ser escrito na memória ou o último valor lido, não a instrução em si.",
+              "FALSA - O MAR (Memory Address Register) contém o endereço de uma posição de memória, não a instrução.",
+              "FALSA - O PC (Program Counter) ou Contador de Programa armazena o endereço da próxima instrução a ser lida, não a instrução em si.",
+              "VERDADEIRA - O IR (Instruction Register) ou Registrador de Instrução armazena a última instrução lida da memória para ser decodificada pela unidade de controle.",
+            ],
+          },
+        },
+        {
+          text: "Considerando a arquitetura de Von Neumann, qual das alternativas representa corretamente o ciclo básico de execução?",
+          options: [
+            "Buscar, Decodificar, Executar",
+            "Carregar, Processar, Salvar",
+            "Ler, Calcular, Escrever",
+            "Acessar, Interpretar, Concluir",
+          ],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "O ciclo básico de execução na arquitetura de Von Neumann consiste em buscar (fetch) a instrução da memória, decodificar (decode) a instrução para identificar a operação a ser realizada e executar (execute) a operação.",
+            options: [
+              "VERDADEIRA - O ciclo básico de execução na arquitetura de Von Neumann consiste em buscar (fetch) a instrução da memória, decodificar (decode) a instrução para identificar a operação a ser realizada e executar (execute) a operação.",
+              "FALSA - Embora possa parecer semelhante, 'Carregar, Processar, Salvar' não é a nomenclatura padrão para o ciclo de Von Neumann.",
+              "FALSA - 'Ler, Calcular, Escrever' não descreve corretamente o ciclo de Von Neumann, embora algumas instruções possam envolver estas operações.",
+              "FALSA - 'Acessar, Interpretar, Concluir' não é a terminologia correta para o ciclo de Von Neumann.",
+            ],
+          },
+        },
+        {
+          text: "Qual arquitetura de processador caracteriza-se por um conjunto pequeno e simples de instruções?",
+          options: ["CISC", "RISC", "VLIW", "Multicore"],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "RISC (Reduced Instruction Set Computer) é caracterizado por um conjunto reduzido e simples de instruções, favorecendo a rapidez de execução.",
+            options: [
+              "FALSA - CISC (Complex Instruction Set Computer) caracteriza-se por um conjunto complexo e extenso de instruções, não pequeno e simples.",
+              "VERDADEIRA - RISC (Reduced Instruction Set Computer) é caracterizado por um conjunto reduzido e simples de instruções, favorecendo a rapidez de execução.",
+              "FALSA - VLIW (Very Long Instruction Word) é uma arquitetura que utiliza instruções muito longas para explorar paralelismo, não se caracteriza por um conjunto pequeno de instruções.",
+              "FALSA - Multicore refere-se a um processador com múltiplos núcleos, não sendo uma classificação baseada no tamanho do conjunto de instruções.",
+            ],
+          },
+        },
+        {
+          text: "O sistema de numeração posicional é aquele em que:",
+          options: [
+            "Cada símbolo representa um valor fixo, independente da sua posição",
+            "O valor do símbolo é determinado por sua posição",
+            "Os símbolos só podem ser algarismos arábicos",
+            "A base do sistema determina a forma de representar frações",
+          ],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "Em um sistema posicional, o valor que um símbolo representa depende de sua posição no número, por exemplo, no decimal, o '1' em 1000 tem valor diferente do '1' em 100.",
+            options: [
+              "FALSA - Esta definição caracteriza um sistema não posicional, como os algarismos romanos.",
+              "VERDADEIRA - Em um sistema posicional, o valor que um símbolo representa depende de sua posição no número, por exemplo, no decimal, o '1' em 1000 tem valor diferente do '1' em 100.",
+              "FALSA - Sistemas posicionais podem usar diversos conjuntos de símbolos, não apenas algarismos arábicos.",
+              "FALSA - A base do sistema define quantos símbolos diferentes são usados, não necessariamente como as frações são representadas.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o valor decimal do número binário 10110?",
+          options: ["16", "22", "26", "32"],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "10110 em binário equivale a 1×2⁴ + 0×2³ + 1×2² + 1×2¹ + 0×2⁰ = 16 + 0 + 4 + 2 + 0 = 22 em decimal.",
+            options: [
+              "FALSA - O valor 16 corresponderia a 10000 em binário.",
+              "VERDADEIRA - 10110 em binário equivale a 1×2⁴ + 0×2³ + 1×2² + 1×2¹ + 0×2⁰ = 16 + 0 + 4 + 2 + 0 = 22 em decimal.",
+              "FALSA - O valor 26 corresponderia a 11010 em binário.",
+              "FALSA - O valor 32 corresponderia a 100000 em binário.",
+            ],
+          },
+        },
+        {
+          text: "Qual alternativa apresenta corretamente a conversão do número decimal 45 para binário?",
+          options: ["101011", "101101", "110001", "101001"],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "O número decimal 45 em binário é 101101, pois 32 + 0 + 8 + 4 + 0 + 1 = 45.",
+            options: [
+              "FALSA - 101011 em binário corresponde a 32 + 0 + 8 + 0 + 2 + 1 = 43 em decimal.",
+              "VERDADEIRA - O número decimal 45 em binário é 101101, pois 32 + 0 + 8 + 4 + 0 + 1 = 45.",
+              "FALSA - 110001 em binário corresponde a 32 + 16 + 0 + 0 + 0 + 1 = 49 em decimal.",
+              "FALSA - 101001 em binário corresponde a 32 + 0 + 8 + 0 + 0 + 1 = 41 em decimal.",
+            ],
+          },
+        },
+        {
+          text: "O número hexadecimal 1F corresponde a qual valor em decimal?",
+          options: ["15", "21", "30", "31"],
+          correctAnswer: 3,
+          explanation: {
+            correct:
+              "1F em hexadecimal corresponde a 1×16¹ + 15×16⁰ = 16 + 15 = 31 em decimal.",
+            options: [
+              "FALSA - 15 em hexadecimal é representado como F, não 1F.",
+              "FALSA - 21 em hexadecimal é representado como 15, não 1F.",
+              "FALSA - 30 em hexadecimal é representado como 1E, não 1F.",
+              "VERDADEIRA - 1F em hexadecimal corresponde a 1×16¹ + 15×16⁰ = 16 + 15 = 31 em decimal.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o valor octal do número binário 11010?",
+          options: ["32", "26", "52", "41"],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "Para converter de binário para octal, agrupamos os bits em grupos de 3 (da direita para a esquerda): 011 010 = 3 2 = 32 em octal.",
+            options: [
+              "VERDADEIRA - Para converter de binário para octal, agrupamos os bits em grupos de 3 (da direita para a esquerda): 011 010 = 3 2 = 32 em octal.",
+              "FALSA - 26 é o valor do número binário 11010 em decimal, não em octal.",
+              "FALSA - 52 não corresponde à conversão correta em octal.",
+              "FALSA - 41 não corresponde à conversão correta em octal.",
+            ],
+          },
+        },
+        {
+          text: "Qual alternativa mostra a sequência correta para converter um número decimal para binário?",
+          options: [
+            "Multiplicar por 2 e agrupar os restos",
+            "Dividir por 2 e agrupar os quocientes",
+            "Dividir por 2 e agrupar os restos (do último para o primeiro)",
+            "Multiplicar por 2 e agrupar os produtos",
+          ],
+          correctAnswer: 2,
+          explanation: {
+            correct:
+              "A conversão correta é feita dividindo o número decimal por 2 sucessivamente e agrupando os restos da última divisão para a primeira.",
+            options: [
+              "FALSA - A conversão de decimal para binário não é feita por multiplicação, mas por divisões sucessivas.",
+              "FALSA - Embora se divida por 2, agrupam-se os restos, não os quocientes.",
+              "VERDADEIRA - A conversão correta é feita dividindo o número decimal por 2 sucessivamente e agrupando os restos da última divisão para a primeira.",
+              "FALSA - A multiplicação por 2 não é o método padrão para esta conversão.",
+            ],
+          },
+        },
+        {
+          text: "Um dos usos mais comuns para o sistema binário na computação é:",
+          options: [
+            "Endereçamento de memória",
+            "Representação de cores",
+            "Processamento lógico e aritmético",
+            "Armazenamento de dados em disco",
+          ],
+          correctAnswer: 2,
+          explanation: {
+            correct:
+              "O sistema binário é fundamental para o processamento lógico e aritmético, pois as operações lógicas básicas (AND, OR, NOT) trabalham diretamente com bits.",
+            options: [
+              "FALSA - Embora o binário seja usado internamente para endereçamento, sistemas como hexadecimal são mais comumente associados ao endereçamento de memória por serem mais compactos.",
+              "FALSA - A representação de cores geralmente utiliza sistemas decimais ou hexadecimais para maior legibilidade (como RGB).",
+              "VERDADEIRA - O sistema binário é fundamental para o processamento lógico e aritmético, pois as operações lógicas básicas (AND, OR, NOT) trabalham diretamente com bits.",
+              "FALSA - Embora os dados sejam armazenados em formato binário no nível físico, o sistema binário em si não é o mais utilizado para referenciar armazenamento.",
+            ],
+          },
+        },
+        {
+          text: "O número 101₂ em decimal é igual a:",
+          options: ["3", "5", "7", "10"],
+          correctAnswer: 1,
+          explanation: {
+            correct: "101₂ = 1×2² + 0×2¹ + 1×2⁰ = 4 + 0 + 1 = 5.",
+            options: [
+              "FALSA - 3 em binário seria 11₂, não 101₂.",
+              "VERDADEIRA - 101₂ = 1×2² + 0×2¹ + 1×2⁰ = 4 + 0 + 1 = 5.",
+              "FALSA - 7 em binário seria 111₂, não 101₂.",
+              "FALSA - 10 em binário seria 1010₂, não 101₂.",
+            ],
+          },
+        },
+        {
+          text: "Como se representa o número 15 no sistema hexadecimal?",
+          options: ["E", "F", "1E", "1F"],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "15 em decimal é representado como F em hexadecimal, pois F é o 15º símbolo (contando a partir de 0) do sistema hexadecimal.",
+            options: [
+              "FALSA - E em hexadecimal corresponde a 14 em decimal, não 15.",
+              "VERDADEIRA - 15 em decimal é representado como F em hexadecimal, pois F é o 15º símbolo (contando a partir de 0) do sistema hexadecimal.",
+              "FALSA - 1E em hexadecimal corresponde a 30 em decimal, não 15.",
+              "FALSA - 1F em hexadecimal corresponde a 31 em decimal, não 15.",
+            ],
+          },
+        },
+        {
+          text: "O agrupamento de bits em conjuntos de 3 é útil para conversão direta entre qual par de sistemas?",
+          options: [
+            "Decimal e Binário",
+            "Binário e Octal",
+            "Octal e Hexadecimal",
+            "Hexadecimal e Decimal",
+          ],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "Cada dígito octal (0-7) pode ser representado por exatamente 3 bits binários, tornando a conversão direta entre binário e octal mais simples usando agrupamentos de 3 bits.",
+            options: [
+              "FALSA - A conversão entre decimal e binário não usa o agrupamento de 3 bits como método direto.",
+              "VERDADEIRA - Cada dígito octal (0-7) pode ser representado por exatamente 3 bits binários, tornando a conversão direta entre binário e octal mais simples usando agrupamentos de 3 bits.",
+              "FALSA - A conversão entre octal e hexadecimal geralmente passa pelo binário como intermediário.",
+              "FALSA - A conversão entre hexadecimal e decimal não usa agrupamento de bits como método direto.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o número máximo de símbolos diferentes em um sistema de base 6?",
+          options: ["5", "6", "7", "12"],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "Um sistema de numeração de base n utiliza n símbolos diferentes, de 0 até n-1. Logo, um sistema de base 6 utiliza 6 símbolos: 0, 1, 2, 3, 4 e 5.",
+            options: [
+              "FALSA - Um sistema de base 5 teria 5 símbolos, não um de base 6.",
+              "VERDADEIRA - Um sistema de numeração de base n utiliza n símbolos diferentes, de 0 até n-1. Logo, um sistema de base 6 utiliza 6 símbolos: 0, 1, 2, 3, 4 e 5.",
+              "FALSA - Um sistema de base 7 teria 7 símbolos, não um de base 6.",
+              "FALSA - 12 símbolos seria característico de um sistema de base 12, não de base 6.",
+            ],
+          },
+        },
+        {
+          text: "O número decimal 255 em hexadecimal é:",
+          options: ["EF", "FE", "FF", "1FF"],
+          correctAnswer: 2,
+          explanation: {
+            correct:
+              "255 em decimal é FF em hexadecimal, pois 15×16¹ + 15×16⁰ = 240 + 15 = 255.",
+            options: [
+              "FALSA - EF em hexadecimal corresponde a 239 em decimal (14×16 + 15), não 255.",
+              "FALSA - FE em hexadecimal corresponde a 254 em decimal (15×16 + 14), não 255.",
+              "VERDADEIRA - 255 em decimal é FF em hexadecimal, pois 15×16¹ + 15×16⁰ = 240 + 15 = 255.",
+              "FALSA - 1FF em hexadecimal corresponde a 511 em decimal (1×16² + 15×16¹ + 15×16⁰), não 255.",
+            ],
+          },
+        },
+        {
+          text: "Qual a vantagem principal do sistema hexadecimal sobre o binário na representação de dados em computadores?",
+          options: [
+            "Maior precisão",
+            "Maior compatibilidade com outros sistemas",
+            "Maior compactação",
+            "Maior velocidade de processamento",
+          ],
+          correctAnswer: 2,
+          explanation: {
+            correct:
+              "O sistema hexadecimal permite representar grandes valores binários de forma mais compacta (cada dígito hexadecimal representa 4 bits).",
+            options: [
+              "FALSA - A precisão é a mesma em ambos os sistemas, pois ambos são sistemas posicionais e podem representar os mesmos valores.",
+              "FALSA - A compatibilidade não é uma questão, pois internamente o computador sempre opera em binário.",
+              "VERDADEIRA - O sistema hexadecimal permite representar grandes valores binários de forma mais compacta (cada dígito hexadecimal representa 4 bits).",
+              "FALSA - A velocidade de processamento não é afetada pelo sistema de numeração usado para representação.",
+            ],
+          },
+        },
+        {
+          text: "Para agrupar bits na conversão de binário para hexadecimal, quantos bits devem ser agrupados?",
+          options: ["2", "3", "4", "8"],
+          correctAnswer: 2,
+          explanation: {
+            correct:
+              "Cada dígito hexadecimal representa exatamente 4 bits, pois 2⁴ = 16, o que corresponde aos 16 símbolos do sistema hexadecimal (0-9, A-F).",
+            options: [
+              "FALSA - 2 bits podem representar apenas 4 valores diferentes (00, 01, 10, 11), insuficiente para os 16 símbolos do sistema hexadecimal.",
+              "FALSA - 3 bits são agrupados na conversão para octal, não para hexadecimal.",
+              "VERDADEIRA - Cada dígito hexadecimal representa exatamente 4 bits, pois 2⁴ = 16, o que corresponde aos 16 símbolos do sistema hexadecimal (0-9, A-F).",
+              "FALSA - 8 bits (um byte) geralmente são representados por dois dígitos hexadecimais, não um.",
+            ],
+          },
+        },
+        {
+          text: "O valor binário do número hexadecimal A5 é:",
+          options: ["1010 0101", "1010 0001", "1100 0101", "1101 0101"],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "Convertendo cada dígito hexadecimal para 4 bits: A = 1110, 5 = 0101, portanto A5 = 1010 0101.",
+            options: [
+              "VERDADEIRA - Convertendo cada dígito hexadecimal para 4 bits: A = 1010, 5 = 0101, portanto A5 = 1010 0101.",
+              "FALSA - Esta seria a representação de A1 em hexadecimal, não A5.",
+              "FALSA - Esta seria a representação de C5 em hexadecimal, não A5.",
+              "FALSA - Esta seria a representação de D5 em hexadecimal, não A5.",
+            ],
+          },
+        },
+        {
+          text: "Qual o valor do dígito mais significativo no número 3572 na base 10?",
+          options: ["2", "5", "7", "3"],
+          correctAnswer: 3,
+          explanation: {
+            correct:
+              "O dígito mais significativo em um número posicional é o mais à esquerda, pois tem o maior peso (multiplicado pela maior potência da base). No número 3572, o dígito mais significativo é o 3.",
+            options: [
+              "FALSA - 2 é o dígito menos significativo, não o mais significativo.",
+              "FALSA - 5 é o segundo dígito a partir da esquerda, não o mais significativo.",
+              "FALSA - 7 é o terceiro dígito a partir da esquerda, não o mais significativo.",
+              "VERDADEIRA - O dígito mais significativo em um número posicional é o mais à esquerda, pois tem o maior peso (multiplicado pela maior potência da base). No número 3572, o dígito mais significativo é o 3.",
+            ],
+          },
+        },
+        {
+          text: "A Lei de Moore, proposta em 1965, afirma que:",
+          options: [
+            "A velocidade dos processadores duplica a cada 12 meses",
+            "O número de transistores em um chip duplica a cada 18 meses",
+            "A capacidade das memórias aumenta 50% a cada ano",
+            "O consumo de energia dos processadores reduz pela metade a cada ano",
+          ],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "A Lei de Moore, formulada por Gordon Moore, afirma que a densidade de transistores nos chips (e consequentemente a capacidade de processamento) dobra aproximadamente a cada 18 meses, mantendo-se o mesmo custo. Na prática, isso tem ocorrido mais próximo de cada 2 anos.",
+            options: [
+              "FALSA - A Lei de Moore não se refere diretamente à velocidade, mas à densidade de transistores.",
+              "VERDADEIRA - A Lei de Moore, formulada por Gordon Moore, afirma que a densidade de transistores nos chips (e consequentemente a capacidade de processamento) dobra aproximadamente a cada 18 meses, mantendo-se o mesmo custo. Na prática, isso tem ocorrido mais próximo de cada 2 anos.",
+              "FALSA - Embora a capacidade das memórias também tenha crescido, a Lei de Moore refere-se especificamente aos transistores em chips de processadores.",
+              "FALSA - A Lei de Moore não aborda diretamente o consumo de energia dos processadores.",
+            ],
+          },
+        },
+        {
+          text: "Qual a diferença básica entre as arquiteturas RISC e CISC?",
+          options: [
+            "RISC utiliza memória cache, CISC não",
+            "RISC possui instruções de tamanho fixo, CISC de tamanho variável",
+            "RISC tem mais registradores que CISC",
+            "RISC utiliza barramento único, CISC barramentos múltiplos",
+          ],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "Uma das principais diferenças entre RISC (Reduced Instruction Set Computer) e CISC (Complex Instruction Set Computer) é que RISC utiliza instruções de formato fixo, enquanto CISC pode ter instruções de tamanho variável.",
+            options: [
+              "FALSA - Tanto arquiteturas RISC quanto CISC podem utilizar memória cache.",
+              "VERDADEIRA - Uma das principais diferenças entre RISC (Reduced Instruction Set Computer) e CISC (Complex Instruction Set Computer) é que RISC utiliza instruções de formato fixo, enquanto CISC pode ter instruções de tamanho variável.",
+              "FALSA - Embora RISC geralmente tenha mais registradores que CISC, esta não é a diferença básica entre as duas arquiteturas.",
+              "FALSA - O tipo de barramento não é o que define se uma arquitetura é RISC ou CISC.",
+            ],
+          },
+        },
+        {
+          text: "Em um processador com múltiplos núcleos (multicore):",
+          options: [
+            "Cada núcleo tem seu próprio sistema operacional",
+            "Os núcleos compartilham apenas a memória cache L1",
+            "Os núcleos podem executar instruções em paralelo",
+            "Os núcleos devem ter a mesma arquitetura do processador principal",
+          ],
+          correctAnswer: 2,
+          explanation: {
+            correct:
+              "A principal vantagem de processadores multicore é justamente a capacidade de executar instruções em paralelo, com cada núcleo processando independentemente.",
+            options: [
+              "FALSA - Os núcleos compartilham o mesmo sistema operacional, embora possam executar diferentes processos ou threads.",
+              "FALSA - A memória cache L1 geralmente é dedicada a cada núcleo, não compartilhada. O que pode ser compartilhado são caches de níveis superiores (L2, L3).",
+              "VERDADEIRA - A principal vantagem de processadores multicore é justamente a capacidade de executar instruções em paralelo, com cada núcleo processando independentemente.",
+              "FALSA - Não existe um 'processador principal' em uma arquitetura multicore; todos os núcleos são processadores independentes, embora geralmente tenham a mesma arquitetura entre si.",
+            ],
+          },
+        },
+        {
+          text: "O que significa CPU na arquitetura de computadores?",
+          options: [
+            "Computer Processing Unit",
+            "Control Processing Unit",
+            "Central Processor Unit",
+            "Central Processing Unit",
+          ],
+          correctAnswer: 3,
+          explanation: {
+            correct:
+              "CPU significa 'Central Processing Unit' (Unidade Central de Processamento), que é o componente principal responsável pelo processamento de instruções e dados em um computador.",
+            options: [
+              "FALSA - 'Computer Processing Unit' não é o significado correto da sigla CPU.",
+              "FALSA - 'Control Processing Unit' não é o significado correto da sigla CPU.",
+              "FALSA - Embora próximo do correto, 'Central Processor Unit' não é a terminologia padrão.",
+              "VERDADEIRA - CPU significa 'Central Processing Unit' (Unidade Central de Processamento), que é o componente principal responsável pelo processamento de instruções e dados em um computador.",
+            ],
+          },
+        },
+        {
+          text: "A função principal da ULA (Unidade Lógica e Aritmética) em um processador é:",
+          options: [
+            "Controlar o fluxo de execução do programa",
+            "Armazenar dados temporariamente",
+            "Executar operações matemáticas e lógicas",
+            "Gerenciar os dispositivos de entrada e saída",
+          ],
+          correctAnswer: 2,
+          explanation: {
+            correct:
+              "A ULA (Unidade Lógica e Aritmética) é responsável por executar operações matemáticas (como adição, subtração) e lógicas (como AND, OR, NOT) sobre os dados.",
+            options: [
+              "FALSA - O controle do fluxo de execução é função da Unidade de Controle, não da ULA.",
+              "FALSA - O armazenamento temporário de dados é função dos registradores, não diretamente da ULA.",
+              "VERDADEIRA - A ULA (Unidade Lógica e Aritmética) é responsável por executar operações matemáticas (como adição, subtração) e lógicas (como AND, OR, NOT) sobre os dados.",
+              "FALSA - O gerenciamento de dispositivos de E/S não é responsabilidade da ULA, mas de controladores específicos ou da Unidade de Controle.",
+            ],
+          },
+        },
+        {
+          text: "O barramento de endereços em um computador é responsável por:",
+          options: [
+            "Transportar dados entre a CPU e a memória",
+            "Especificar o endereço de memória a ser acessado",
+            "Controlar o fluxo de execução do programa",
+            "Sincronizar as operações entre CPU e dispositivos",
+          ],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "O barramento de endereços é usado para especificar o endereço de memória a ser acessado ou o dispositivo de E/S a ser ativado.",
+            options: [
+              "FALSA - O transporte de dados é função do barramento de dados, não do barramento de endereços.",
+              "VERDADEIRA - O barramento de endereços é usado para especificar o endereço de memória a ser acessado ou o dispositivo de E/S a ser ativado.",
+              "FALSA - O controle do fluxo de execução não é função direta do barramento de endereços.",
+              "FALSA - A sincronização das operações é função do barramento de controle, não do barramento de endereços.",
+            ],
+          },
+        },
+        {
+          text: "Um processador com barramento de 32 bits pode endereçar diretamente até:",
+          options: [
+            "4 GB de memória",
+            "8 GB de memória",
+            "16 GB de memória",
+            "32 GB de memória",
+          ],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "Um processador com barramento de endereços de 32 bits pode endereçar 2³² posições de memória, o que equivale a 4.294.967.296 bytes, ou aproximadamente 4 GB.",
+            options: [
+              "VERDADEIRA - Um processador com barramento de endereços de 32 bits pode endereçar 2³² posições de memória, o que equivale a 4.294.967.296 bytes, ou aproximadamente 4 GB.",
+              "FALSA - 8 GB seria o limite para um barramento de 33 bits, não 32 bits.",
+              "FALSA - 16 GB seria o limite para um barramento de 34 bits, não 32 bits.",
+              "FALSA - 32 GB seria o limite para um barramento de 35 bits, não 32 bits.",
+            ],
+          },
+        },
+        {
+          text: "Qual é a principal função da memória cache em um computador?",
+          options: [
+            "Armazenar o sistema operacional",
+            "Aumentar a capacidade total de armazenamento",
+            "Acelerar o acesso a dados frequentemente utilizados",
+            "Substituir a memória RAM quando esta estiver cheia",
+          ],
+          correctAnswer: 2,
+          explanation: {
+            correct:
+              "A memória cache tem como função principal armazenar dados e instruções frequentemente utilizados, reduzindo o tempo de acesso à memória principal e acelerando o processamento.",
+            options: [
+              "FALSA - O sistema operacional é armazenado principalmente na memória RAM quando em execução, não na cache.",
+              "FALSA - A cache não aumenta significativamente a capacidade de armazenamento devido ao seu tamanho geralmente reduzido.",
+              "VERDADEIRA - A memória cache tem como função principal armazenar dados e instruções frequentemente utilizados, reduzindo o tempo de acesso à memória principal e acelerando o processamento.",
+              "FALSA - A cache não substitui a RAM quando esta está cheia; para isso, utiliza-se a memória virtual no disco rígido.",
+            ],
+          },
+        },
+        {
+          text: "Na hierarquia de memória de um computador, qual é a mais rápida?",
+          options: ["RAM", "Cache L1", "Cache L3", "Registradores da CPU"],
+          correctAnswer: 3,
+          explanation: {
+            correct:
+              "Os registradores da CPU são o nível mais rápido na hierarquia de memória, seguidos pelas caches (L1, L2, L3), RAM e armazenamento em disco.",
+            options: [
+              "FALSA - A RAM é mais lenta que as caches e os registradores.",
+              "FALSA - Embora a cache L1 seja a mais rápida entre as caches, os registradores da CPU são ainda mais rápidos.",
+              "FALSA - A cache L3 é mais lenta que as caches L1, L2 e os registradores.",
+              "VERDADEIRA - Os registradores da CPU são o nível mais rápido na hierarquia de memória, seguidos pelas caches (L1, L2, L3), RAM e armazenamento em disco.",
+            ],
+          },
+        },
+        {
+          text: "Qual é a função do contador de programa (PC - Program Counter) em um processador?",
+          options: [
+            "Contar quantos programas estão em execução",
+            "Armazenar o endereço da próxima instrução a ser executada",
+            "Contar quantas instruções já foram executadas",
+            "Armazenar o resultado da última operação realizada",
+          ],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "O contador de programa (PC) armazena o endereço da próxima instrução a ser buscada e executada pela CPU.",
+            options: [
+              "FALSA - O PC não conta a quantidade de programas em execução.",
+              "VERDADEIRA - O contador de programa (PC) armazena o endereço da próxima instrução a ser buscada e executada pela CPU.",
+              "FALSA - O PC não é usado para contar instruções já executadas.",
+              "FALSA - O resultado da última operação geralmente é armazenado em registradores de propósito geral ou no acumulador, não no PC.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o resultado da soma binária 101 + 110?",
+          options: ["1011", "1101", "1111", "10001"],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "101 (5 em decimal) + 110 (6 em decimal) = 1011 (11 em decimal).",
+            options: [
+              "VERDADEIRA - 101 (5 em decimal) + 110 (6 em decimal) = 1011 (11 em decimal).",
+              "FALSA - 1101 em binário corresponde a 13 em decimal, não ao resultado de 5 + 6.",
+              "FALSA - 1111 em binário corresponde a 15 em decimal, não ao resultado de 5 + 6.",
+              "FALSA - 10001 em binário corresponde a 17 em decimal, não ao resultado de 5 + 6.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o equivalente decimal do número octal 75?",
+          options: ["45", "61", "75", "85"],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "75 em octal equivale a 7×8¹ + 5×8⁰ = 56 + 5 = 61 em decimal.",
+            options: [
+              "FALSA - 45 não é o valor decimal correto de 75 octal.",
+              "VERDADEIRA - 75 em octal equivale a 7×8¹ + 5×8⁰ = 56 + 5 = 61 em decimal.",
+              "FALSA - 75 é o valor em octal, não em decimal.",
+              "FALSA - 85 não é o valor decimal correto de 75 octal.",
+            ],
+          },
+        },
+        {
+          text: "Qual é a representação binária do número decimal 42?",
+          options: ["100010", "101010", "110010", "111010"],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "42 em decimal corresponde a 32 + 8 + 2 = 101010 em binário.",
+            options: [
+              "FALSA - 100010 em binário equivale a 34 em decimal, não 42.",
+              "VERDADEIRA - 42 em decimal corresponde a 32 + 8 + 2 = 101010 em binário.",
+              "FALSA - 110010 em binário equivale a 50 em decimal, não 42.",
+              "FALSA - 111010 em binário equivale a 58 em decimal (32 + 16 + 8 + 2), não 42.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o resultado da conversão do número binário 11011101 para base octal?",
+          options: ["335", "336", "337", "375"],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "Para converter de binário para octal, agrupamos os bits em grupos de 3 da direita para a esquerda: 011|011|101 = 3|3|5 = 335₈.",
+            options: [
+              "VERDADEIRA - Para converter de binário para octal, agrupamos os bits em grupos de 3 da direita para a esquerda: 011|011|101 = 3|3|5 = 335₈.",
+              "FALSA - Este valor não corresponde à conversão correta. O resultado correto é 335₈.",
+              "FALSA - Este valor não corresponde à conversão correta. O resultado correto é 335₈.",
+              "FALSA - Este valor não corresponde à conversão correta. O resultado correto é 335₈.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o resultado da soma dos números binários 1011 e 101?",
+          options: ["10000", "10100", "11001", "10000"],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "1011 + 101 = 1011 + 0101 = 10000₂, que é equivalente a 11 + 5 = 16 em decimal.",
+            options: [
+              "VERDADEIRA - 1011 + 101 = 1011 + 0101 = 10000₂, que é equivalente a 11 + 5 = 16 em decimal.",
+              "FALSA - Este resultado está incorreto. A soma correta é 10000₂.",
+              "FALSA - Este resultado está incorreto. A soma correta é 10000₂.",
+              "FALSA - Este é o mesmo que a alternativa A, mas apenas uma resposta pode ser correta.",
+            ],
+          },
+        },
+        {
+          text: "O número hexadecimal 1F corresponde a qual valor em decimal?",
+          options: ["15", "21", "30", "31"],
+          correctAnswer: 3,
+          explanation: {
+            correct:
+              "1F em hexadecimal corresponde a 1×16¹ + 15×16⁰ = 16 + 15 = 31 em decimal.",
+            options: [
+              "FALSA - 15 em hexadecimal é representado como F, não 1F.",
+              "FALSA - 21 em hexadecimal é representado como 15, não 1F.",
+              "FALSA - 30 em hexadecimal é representado como 1E, não 1F.",
+              "VERDADEIRA - 1F em hexadecimal corresponde a 1×16¹ + 15×16⁰ = 16 + 15 = 31 em decimal.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o valor octal do número binário 101010?",
+          options: ["42", "52", "62", "72"],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "Agrupando os bits em grupos de 3 da direita para a esquerda: 101|010 = 5|2 = 52₈.",
+            options: [
+              "FALSA - 42₈ não é a conversão correta de 101010₂ para octal.",
+              "VERDADEIRA - Agrupando os bits em grupos de 3 da direita para a esquerda: 101|010 = 5|2 = 52₈.",
+              "FALSA - 62₈ não é a conversão correta de 101010₂ para octal.",
+              "FALSA - 72₈ não é a conversão correta de 101010₂ para octal.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o resultado da subtração 1101₂ - 111₂ em binário?",
+          options: ["110", "1000", "1001", "1010"],
+          correctAnswer: 0,
+          explanation: {
+            correct: "1101₂ (13₁₀) - 111₂ (7₁₀) = 110₂ (6₁₀).",
+            options: [
+              "VERDADEIRA - 1101₂ (13₁₀) - 111₂ (7₁₀) = 110₂ (6₁₀).",
+              "FALSA - 1000₂ = 8₁₀, que não é o resultado correto da subtração 13₁₀ - 7₁₀.",
+              "FALSA - 1001₂ = 9₁₀, que não é o resultado correto da subtração 13₁₀ - 7₁₀.",
+              "FALSA - 1010₂ = 10₁₀, que não é o resultado correto da subtração 13₁₀ - 7₁₀.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o valor decimal do número hexadecimal 2F3?",
+          options: ["723", "755", "751", "739"],
+          correctAnswer: 1,
+          explanation: {
+            correct: "2F3₁₆ = 2×16² + 15×16¹ + 3×16⁰ = 512 + 240 + 3 = 755₁₀.",
+            options: [
+              "FALSA - 723₁₀ não é a conversão correta de 2F3₁₆ para decimal.",
+              "VERDADEIRA - 2F3₁₆ = 2×16² + 15×16¹ + 3×16⁰ = 512 + 240 + 3 = 755₁₀.",
+              "FALSA - 751₁₀ não é a conversão correta de 2F3₁₆ para decimal.",
+              "FALSA - 739₁₀ não é a conversão correta de 2F3₁₆ para decimal.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o resultado da multiplicação dos números binários 101 e 11?",
+          options: ["1111", "1011", "10001", "1111"],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "101₂ × 11₂ = 101₂ × (10₂ + 1₂) = 1010₂ + 101₂ = 1111₂, que é equivalente a 5₁₀ × 3₁₀ = 15₁₀.",
+            options: [
+              "VERDADEIRA - 101₂ × 11₂ = 101₂ × (10₂ + 1₂) = 1010₂ + 101₂ = 1111₂, que é equivalente a 5₁₀ × 3₁₀ = 15₁₀.",
+              "FALSA - 1011₂ = 11₁₀, que não é o resultado correto da multiplicação 5₁₀ × 3₁₀.",
+              "FALSA - 10001₂ = 17₁₀, que não é o resultado correto da multiplicação 5₁₀ × 3₁₀.",
+              "FALSA - Esta é a mesma resposta que a alternativa A, portanto deve ser considerada incorreta na estrutura da questão.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o valor octal do número decimal 129?",
+          options: ["177", "201", "205", "301"],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "129₁₀ ÷ 8 = 16 resto 1; 16 ÷ 8 = 2 resto 0; 2 ÷ 8 = 0 resto 2. Portanto, 129₁₀ = 201₈.",
+            options: [
+              "FALSA - 177₈ = 1×8² + 7×8¹ + 7×8⁰ = 64 + 56 + 7 = 127₁₀, não 129₁₀.",
+              "VERDADEIRA - 129₁₀ ÷ 8 = 16 resto 1; 16 ÷ 8 = 2 resto 0; 2 ÷ 8 = 0 resto 2. Portanto, 129₁₀ = 201₈.",
+              "FALSA - 205₈ = 2×8² + 0×8¹ + 5×8⁰ = 128 + 0 + 5 = 133₁₀, não 129₁₀.",
+              "FALSA - 301₈ = 3×8² + 0×8¹ + 1×8⁰ = 192 + 0 + 1 = 193₁₀, não 129₁₀.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o resultado da operação XOR entre os números binários 1101 e 1010?",
+          options: ["0111", "1001", "0011", "0110"],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "A operação XOR (OU exclusivo) resulta em 1 quando os bits são diferentes. Realizando bit a bit: 1101 XOR 1010 = 0111.",
+            options: [
+              "VERDADEIRA - A operação XOR (OU exclusivo) resulta em 1 quando os bits são diferentes. Realizando bit a bit: 1101 XOR 1010 = 0111.",
+              "FALSA - Este resultado está incorreto. A operação XOR correta entre 1101 e 1010 é 0111.",
+              "FALSA - Este resultado está incorreto. A operação XOR correta entre 1101 e 1010 é 0111.",
+              "FALSA - Este resultado está incorreto. A operação XOR correta entre 1101 e 1010 é 0111.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o valor binário do número hexadecimal E9?",
+          options: ["11101001", "11100101", "11100111", "11101101"],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "Convertendo cada dígito hexadecimal para 4 bits: E = 1110 e 9 = 1001, resultando em 11101001₂.",
+            options: [
+              "VERDADEIRA - Convertendo cada dígito hexadecimal para 4 bits: E = 1110 e 9 = 1001, resultando em 11101001₂.",
+              "FALSA - Este resultado não corresponde à conversão correta de E9₁₆ para binário.",
+              "FALSA - Este resultado não corresponde à conversão correta de E9₁₆ para binário.",
+              "FALSA - Este resultado não corresponde à conversão correta de E9₁₆ para binário.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o complemento de 2 do número binário 10110?",
+          options: ["01001", "01010", "01110", "10001"],
+          correctAnswer: 1,
+          explanation: {
+            correct:
+              "Para encontrar o complemento de 2, invertemos todos os bits (10110₂ se torna 01001₂) e adicionamos 1: 01001₂ + 1₂ = 01010₂.",
+            options: [
+              "FALSA - Este resultado não corresponde ao complemento de 2 correto de 10110₂.",
+              "VERDADEIRA - Para encontrar o complemento de 2, invertemos todos os bits (10110₂ se torna 01001₂) e adicionamos 1: 01001₂ + 1₂ = 01010₂.",
+              "FALSA - Este resultado não corresponde ao complemento de 2 correto de 10110₂.",
+              "FALSA - Este resultado não corresponde ao complemento de 2 correto de 10110₂.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o valor decimal do número octal 427?",
+          options: ["268", "279", "285", "271"],
+          correctAnswer: 1,
+          explanation: {
+            correct: "427₈ = 4×8² + 2×8¹ + 7×8⁰ = 256 + 16 + 7 = 279₁₀.",
+            options: [
+              "FALSA - 268₁₀ não é a conversão correta de 427₈ para decimal.",
+              "VERDADEIRA - 427₈ = 4×8² + 2×8¹ + 7×8⁰ = 256 + 16 + 7 = 279₁₀.",
+              "FALSA - 285₁₀ não é a conversão correta de 427₈ para decimal.",
+              "FALSA - 271₁₀ não é a conversão correta de 427₈ para decimal.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o resultado da conversão do número decimal 478 para hexadecimal?",
+          options: ["1DE", "1EE", "1FE", "2DE"],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "478₁₀ ÷ 16 = 29 resto 14 (E); 29 ÷ 16 = 1 resto 13 (D); 1 ÷ 16 = 0 resto 1. Portanto, 478₁₀ = 1DE₁₆.",
+            options: [
+              "VERDADEIRA - 478₁₀ ÷ 16 = 29 resto 14 (E); 29 ÷ 16 = 1 resto 13 (D); 1 ÷ 16 = 0 resto 1. Portanto, 478₁₀ = 1DE₁₆.",
+              "FALSA - 1EE₁₆ = 1×16² + 14×16¹ + 14×16⁰ = 256 + 224 + 14 = 494₁₀, não 478₁₀.",
+              "FALSA - 1FE₁₆ = 1×16² + 15×16¹ + 14×16⁰ = 256 + 240 + 14 = 510₁₀, não 478₁₀.",
+              "FALSA - 2DE₁₆ = 2×16² + 13×16¹ + 14×16⁰ = 512 + 208 + 14 = 734₁₀, não 478₁₀.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o resultado da operação OR entre os números binários 10110 e 01101?",
+          options: ["11111", "10101", "11011", "00100"],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "A operação OR resulta em 1 quando pelo menos um dos bits é 1. Realizando bit a bit: 10110 OR 01101 = 11111.",
+            options: [
+              "VERDADEIRA - A operação OR resulta em 1 quando pelo menos um dos bits é 1. Realizando bit a bit: 10110 OR 01101 = 11111.",
+              "FALSA - Este resultado está incorreto. A operação OR correta entre 10110 e 01101 é 11111.",
+              "FALSA - Este resultado está incorreto. A operação OR correta entre 10110 e 01101 é 11111.",
+              "FALSA - Este resultado está incorreto. A operação OR correta entre 10110 e 01101 é 11111.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o complemento de 1 do número binário 01101011?",
+          options: ["10010100", "10010101", "10101100", "10010110"],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "O complemento de 1 é obtido invertendo todos os bits. Portanto, o complemento de 1 de 01101011 é 10010100.",
+            options: [
+              "VERDADEIRA - O complemento de 1 é obtido invertendo todos os bits. Portanto, o complemento de 1 de 01101011 é 10010100.",
+              "FALSA - Este resultado não corresponde ao complemento de 1 correto de 01101011₂.",
+              "FALSA - Este resultado não corresponde ao complemento de 1 correto de 01101011₂.",
+              "FALSA - Este resultado não corresponde ao complemento de 1 correto de 01101011₂.",
+            ],
+          },
+        },
+        {
+          text: "Qual é o valor em binário da operação (101₂ << 2), ou seja, o número binário 101 com deslocamento de 2 bits para a esquerda?",
+          options: ["10100", "10000", "11001", "10001"],
+          correctAnswer: 0,
+          explanation: {
+            correct:
+              "O deslocamento de 2 bits para a esquerda (<<2) adiciona dois zeros à direita do número. Portanto, 101₂ << 2 = 10100₂, que é equivalente a multiplicar o número por 2² = 4: 5₁₀ × 4 = 20₁₀ = 10100₂.",
+            options: [
+              "VERDADEIRA - O deslocamento de 2 bits para a esquerda (<<2) adiciona dois zeros à direita do número. Portanto, 101₂ << 2 = 10100₂, que é equivalente a multiplicar o número por 2² = 4: 5₁₀ × 4 = 20₁₀ = 10100₂.",
+              "FALSA - 10000₂ = 16₁₀, que não corresponde ao resultado correto de 101₂ << 2.",
+              "FALSA - 11001₂ = 25₁₀, que não corresponde ao resultado correto de 101₂ << 2.",
+              "FALSA - 10001₂ = 17₁₀, que não corresponde ao resultado correto de 101₂ << 2.",
+            ],
+          },
+        },
+      ];
+
+      const welcomeScreen = document.querySelector(".welcome-screen");
+      const questionScreen = document.querySelector(".question-screen");
+      const resultsScreen = document.querySelector(".results-screen");
+      const startBtn = document.getElementById("start-btn");
+      const questionText = document.getElementById("question-text");
+      const optionsList = document.getElementById("options-list");
+      const questionNumber = document.querySelector(".question-number");
+      const progressBarFill = document.querySelector(".progress-bar-fill");
+      const btnCheck = document.getElementById("btn-check");
+      const btnNext = document.getElementById("btn-next");
+      const btnPrevious = document.getElementById("btn-previous");
+      const feedbackCorrect = document.getElementById("feedback-correct");
+      const feedbackIncorrect = document.getElementById("feedback-incorrect");
+      const correctAnswer = document.getElementById("correct-answer");
+      const explanation = document.getElementById("explanation");
+      const correctCount = document.getElementById("correct-count");
+      const totalQuestions = document.getElementById("total-questions");
+      const scoreMessage = document.getElementById("score-message");
+      const restartBtn = document.getElementById("restart-btn");
+      const downloadBtn = document.getElementById("download-btn");
+
+      let currentQuestionIndex = 0;
+      let userAnswers = Array(questions.length).fill(null);
+      let answeredQuestions = Array(questions.length).fill(false);
+
+      startBtn.addEventListener("click", () => {
+        welcomeScreen.style.display = "none";
+        questionScreen.style.display = "block";
+        loadQuestion(currentQuestionIndex);
+      });
+
+      function loadQuestion(index) {
+        const question = questions[index];
+        questionText.textContent = question.text;
+        questionNumber.textContent = index + 1;
+        optionsList.innerHTML = "";
+
+        question.options.forEach((option, i) => {
+          const li = document.createElement("li");
+          li.className = "option";
+          if (userAnswers[index] === i) {
+            li.classList.add("selected");
+          }
+          if (answeredQuestions[index]) {
+            if (i === question.correctAnswer) {
+              li.classList.add("correct");
+            } else if (userAnswers[index] === i) {
+              li.classList.add("incorrect");
+            }
+            li.style.pointerEvents = "none";
+          }
+
+          li.innerHTML = `
+                    <span class="option-letter">${String.fromCharCode(
+                      97 + i
+                    )}</span>
+                    <span>${option}</span>
+                `;
+
+          li.addEventListener("click", () => {
+            if (!answeredQuestions[index]) {
+              document
+                .querySelectorAll(".option")
+                .forEach((opt) => opt.classList.remove("selected"));
+              li.classList.add("selected");
+              userAnswers[index] = i;
+            }
+          });
+
+          optionsList.appendChild(li);
+        });
+
+        btnPrevious.style.display = index === 0 ? "none" : "block";
+
+        progressBarFill.style.width = `${
+          ((index + 1) / questions.length) * 100
+        }%`;
+
+        feedbackCorrect.style.display = "none";
+        feedbackIncorrect.style.display = "none";
+        explanation.style.display = "none";
+
+        if (answeredQuestions[index]) {
+          btnCheck.style.display = "none";
+          btnNext.style.display = "block";
+
+          if (userAnswers[index] === question.correctAnswer) {
+            feedbackCorrect.style.display = "block";
+          } else {
+            feedbackIncorrect.style.display = "block";
+            correctAnswer.textContent = `${String.fromCharCode(
+              97 + question.correctAnswer
+            )}) ${question.options[question.correctAnswer]}`;
+          }
+
+          explanation.innerHTML = `<strong>Explicação:</strong><br>${
+            question.explanation.options[userAnswers[index]]
+          }`;
+          explanation.style.display = "block";
+        } else {
+          btnCheck.style.display = "block";
+          btnNext.style.display = "none";
+        }
+      }
+
+      btnCheck.addEventListener("click", () => {
+        const selectedOption = document.querySelector(".option.selected");
+        if (!selectedOption) {
+          alert("Por favor, selecione uma opção antes de verificar.");
+          return;
+        }
+
+        const question = questions[currentQuestionIndex];
+        const selectedIndex = userAnswers[currentQuestionIndex];
+
+        answeredQuestions[currentQuestionIndex] = true;
+
+        document.querySelectorAll(".option").forEach((option, index) => {
+          if (index === question.correctAnswer) {
+            option.classList.add("correct");
+          } else if (index === selectedIndex) {
+            option.classList.add("incorrect");
+          }
+          option.style.pointerEvents = "none";
+        });
+
+        if (selectedIndex === question.correctAnswer) {
+          feedbackCorrect.style.display = "block";
+        } else {
+          feedbackIncorrect.style.display = "block";
+          correctAnswer.textContent = `${String.fromCharCode(
+            97 + question.correctAnswer
+          )}) ${question.options[question.correctAnswer]}`;
+        }
+
+        explanation.innerHTML = `<strong>Explicação:</strong><br>${question.explanation.options[selectedIndex]}`;
+        explanation.style.display = "block";
+
+        btnCheck.style.display = "none";
+        btnNext.style.display = "block";
+      });
+
+      btnNext.addEventListener("click", () => {
+        if (currentQuestionIndex < questions.length - 1) {
+          currentQuestionIndex++;
+          loadQuestion(currentQuestionIndex);
+        } else {
+          showResults();
+        }
+      });
+
+      btnPrevious.addEventListener("click", () => {
+        if (currentQuestionIndex > 0) {
+          currentQuestionIndex--;
+          loadQuestion(currentQuestionIndex);
+        }
+      });
+
+      function showResults() {
+        questionScreen.style.display = "none";
+        resultsScreen.style.display = "block";
+
+        const score = userAnswers.filter(
+          (answer, index) => answer === questions[index].correctAnswer
+        ).length;
+
+        correctCount.textContent = score;
+        totalQuestions.textContent = questions.length + 1;
+
+        if (score === questions.length) {
+          scoreMessage.textContent =
+            "Excelente! Você acertou todas as questões!";
+        } else if (score >= Math.floor(questions.length * 0.7)) {
+          scoreMessage.textContent =
+            "Muito bom! Você tem um ótimo conhecimento sobre sistemas computacionais.";
+        } else if (score >= Math.floor(questions.length * 0.5)) {
+          scoreMessage.textContent =
+            "Bom trabalho! Você conhece o básico sobre sistemas computacionais.";
+        } else {
+          scoreMessage.textContent =
+            "Continue estudando! A prática leva à perfeição.";
+        }
+      }
+
+      restartBtn.addEventListener("click", () => {
+        currentQuestionIndex = 0;
+        userAnswers = Array(questions.length).fill(null);
+        answeredQuestions = Array(questions.length).fill(false);
+
+        resultsScreen.style.display = "none";
+        questionScreen.style.display = "block";
+        loadQuestion(0);
+      });
+
+      downloadBtn.addEventListener("click", () => {
+        const link = document.createElement("a");
+
+        link.href = "gabarito-sistemas-computacionais.pdf";
+        link.download = "gabarito-sistemas-computacionais.pdf";
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    </script>
+  </body>
+</html>
